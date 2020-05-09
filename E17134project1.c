@@ -6,7 +6,7 @@
 #define SIZELARGE 132
 
 void removeGarbage(char*);
-char *hashString(unsigned char*,int);
+char *hashString(char*,int);
 int toBinary(char);
 void smallQR(char*,int);
 void largeQR(char*,int);
@@ -15,7 +15,7 @@ void strReverse(char*,int,int);
 
 int main(int argc, char* argv[]){
 	printf("\033[0m");//rests all atributes
-	int i,color=40;//default color black
+	int color=40;//default color black
 	if(argc==3){//setting colors from input
 		if(strcmp(argv[1],"-c")==0){
 			if(strcmp(argv[2],"black")==0||strcmp(argv[2],"BLACK")==0){
@@ -33,30 +33,30 @@ int main(int argc, char* argv[]){
 			}else if(strcmp(argv[2],"cyan")==0||strcmp(argv[2],"CYAN")==0){
 				color=46;
 			}else{//displaying usage for unsupported formats
-				printf("Incorrect usage of arguments.\nusage :\n./E17134project1 -c [black|red|green|yellow|blue|magenta|cyan]\n./E17134project1 -h for the help about the program\n");
+				printf("Invalid argument for color.\nusage :\n%s -c [black|red|green|yellow|blue|magenta|cyan]\n%s -h for the help about the program\n",argv[0],argv[0]);
 				return 0;
 			}
 		}else{	
-			printf("Incorrect usage of arguments.\nusage :\n./E17134project1 -c [black|red|green|yellow|blue|magenta|cyan]\n./E17134project1 -h for the help about the program\n");
+			printf("Incorrect usage of arguments.\nusage :\n%s -c [black|red|green|yellow|blue|magenta|cyan]\n%s -h for the help about the program\n",argv[0],argv[0]);
 			return 0;
 		}
 
 	}else if(argc ==2){
 		if(strcmp(argv[1],"-h")==0){//displaying help
-			printf("usage :\n./E17134project1 -c [black|red|green|yellow|blue|magenta|cyan]\n./E17134project1 -h for the help about the program\n");
+			printf("usage :\n%s -c [black|red|green|yellow|blue|magenta|cyan]\n%s -h for the help about the program\n",argv[0],argv[0]);
 			return 0;
 
 		}else{
-			printf("Incorrect usage of arguments.\nusage :\n./E17134project1 -c [black|red|green|yellow|blue|magenta|cyan]\n./E17134project1 -h for the help about the program\n");	
+			printf("Incorrect usage of arguments.\nusage :\n%s -c [black|red|green|yellow|blue|magenta|cyan]\n%s -h for the help about the program\n",argv[0],argv[0]);	
 			return 0;	
 		}
 		
     	}else if(argc>3){
-		printf("Incorrect usage of arguments.\nusage :\n./E17134project1 -c [black|red|green|yellow|blue|magenta|cyan]\n./E17134project1 -h for the help about the program\n");
+		printf("Incorrect usage of arguments.\nusage :\n%s -c [black|red|green|yellow|blue|magenta|cyan]\n%s -h for the help about the program\n",argv[0],argv[0]);
 		return 0;
 	}	    
 
-	unsigned char inputString[140];
+	char inputString[140];
 	removeGarbage(inputString);//removing garbage values
 
 	printf("Enter the URL: ");
@@ -64,18 +64,16 @@ int main(int argc, char* argv[]){
 
 	if(strlen(inputString)>120){//checking if the string contains more than 120 characters
 		printf("String is too long. Not supported by available QR versions\n");
-		//printf("\033[3;1f\033[0m");
 		return 0;
 	}else if(strlen(inputString)<=3){//checking if the string has less than 3 charachers
 		printf("String is too short. Not supported by available QR versions\n");
-		//printf("\033[3;1f\033[0m");
 		return 0;
-	}else if(strlen(inputString)<=20){		
+	}else if(strlen(inputString)<=20){//displaying small QR	
 		printf("\033[0m\033[2J\033[H");//resets all atributes and takes curser to Home		
 		smallQR(hashString(inputString,SIZESMALL),color);
 		printf("\033[22;1f\033[0m");
 		return 0;
-	}else{		
+	}else{//displaying large QR
 		printf("\033[0m\033[2J\033[H");//resets all atributes and takes curser to Home
 		largeQR(hashString(inputString,SIZELARGE),color);
 		printf("\033[40;1f\033[0m");
@@ -104,23 +102,23 @@ void strReverse(char* strng,int start,int end){//reverses a string
 	}
 
 
-char *hashString(unsigned char *string,int hashSize){//hashes a string to any size
+char *hashString(char *string,int hashSize){//hashes a string to any size
 
 	int i,j,n,m;
 	m=(hashSize-1)/strlen(string);//no of times the string has to be fully iterated through
 	n=(hashSize-1)%strlen(string);//remaining room to be hashed after full iterations of the string
-	unsigned char tempHashedString[hashSize+1];
-	static unsigned char* tempString;
-	tempString=malloc(hashSize);
+	char tempHashedString[hashSize+1];
+	static char* tempString;
+	tempString=malloc(hashSize);//allocating memory to the temporary string  
 	tempString[0]=strlen(string)+50;
-	removeGarbage(tempHashedString);//removing garbage
+	removeGarbage(tempHashedString);//removing garbage values
 
 	for(i=0;i<(m-1);i++){//hashing the string with full iterations
 		for(j=0;j<strlen(string);j++){
 			tempHashedString[j+strlen(string)*i]=*(string + j)+1+i;
 		}			
 	}
-	if(m==1){//if the string has to iterated only once
+	if(m==1){//if the string has to be iterated only once
 		for(i=0;i<strlen(string);i++){
 			tempHashedString[i]=string[i]+1;
 		}
@@ -128,7 +126,7 @@ char *hashString(unsigned char *string,int hashSize){//hashes a string to any si
 	for(i=0;i<n;i++){//hashing the remaining room
 		tempHashedString[(m-1)*(strlen(string))+i]=*(string + i)+m;
 	}
-	for(i=0;i<strlen(string)-n;i++){//removing garbage
+	for(i=0;i<strlen(string)-n;i++){//removing garbage values
 		tempHashedString[(m-1)*(strlen(string))+i+n]='\0';
 	}
 
